@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:vehicle_monitoring/app_theme.dart';
 import 'package:vehicle_monitoring/pages/home_page.dart';
 import 'package:vehicle_monitoring/pages/login_page.dart';
 
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Monitoramento de Veículos',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: appTheme,
       home: const AuthCheck(),
     );
   }

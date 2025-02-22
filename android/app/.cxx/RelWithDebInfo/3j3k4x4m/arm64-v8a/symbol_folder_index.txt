@@ -1,0 +1,1 @@
+C:\Users\erica\StudioProjects\vehicle_monitoring\build\app\intermediates\cxx\RelWithDebInfo\3j3k4x4m\obj\arm64-v8a

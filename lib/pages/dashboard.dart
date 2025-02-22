@@ -16,11 +16,14 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  final Completer<GoogleMapController> _googleMapCompletterController = Completer<GoogleMapController>();
+  final Completer<GoogleMapController> _googleMapCompletterController =
+      Completer<GoogleMapController>();
   GoogleMapController? _mapController;
   Set<Marker> _markers = {};
-  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref().child('vehicles');
-  final DatabaseReference _logRef = FirebaseDatabase.instance.ref().child('logs');
+  final DatabaseReference _dbRef =
+      FirebaseDatabase.instance.ref().child('vehicles');
+  final DatabaseReference _logRef =
+      FirebaseDatabase.instance.ref().child('logs');
   StreamSubscription? _subscription;
 
   @override
@@ -43,22 +46,27 @@ class _DashboardState extends State<Dashboard> {
       Set<Marker> newMarkers = {};
       if (data != null) {
         data.forEach((key, value) {
-          bool emMovimento = value['em_movimento'] ?? false;
-          if (emMovimento) {
-            _logEvent("Veículo $key em movimento");
+          if (value['latitude'] != null && value['longitude'] != null) {
+            bool emMovimento = value['em_movimento'] ?? false;
+            if (emMovimento) {
+              _logEvent("Veículo $key em movimento");
+            }
+            var marker = Marker(
+              markerId: MarkerId(key),
+              position: LatLng(value['latitude'], value['longitude']),
+              icon: emMovimento
+                  ? BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueRed)
+                  : BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueBlue),
+              infoWindow: InfoWindow(
+                title: key,
+                snippet:
+                    'Velocidade: ${value['velocidade'] ?? "N/A"} km/h\nMovimento: ${emMovimento ? "Sim" : "Não"}',
+              ),
+            );
+            newMarkers.add(marker);
           }
-          var marker = Marker(
-            markerId: MarkerId(key),
-            position: LatLng(value['latitude'], value['longitude']),
-            icon: emMovimento
-                ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed)
-                : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-            infoWindow: InfoWindow(
-              title: key,
-              snippet: 'Velocidade: ${value['velocidade'] ?? "N/A"} km/h\nMovimento: ${emMovimento ? "Sim" : "Não"}',
-            ),
-          );
-          newMarkers.add(marker);
         });
       }
       setState(() {
@@ -69,10 +77,9 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void _logEvent(String message) {
-    _logRef.push().set({
-      'timestamp': DateTime.now().toIso8601String(),
-      'event': message
-    });
+    _logRef
+        .push()
+        .set({'timestamp': DateTime.now().toIso8601String(), 'event': message});
   }
 
   void _adjustMapView() {
@@ -94,7 +101,8 @@ class _DashboardState extends State<Dashboard> {
       if (marker.position.longitude < west) west = marker.position.longitude;
       if (marker.position.longitude > east) east = marker.position.longitude;
     }
-    return LatLngBounds(southwest: LatLng(south, west), northeast: LatLng(north, east));
+    return LatLngBounds(
+        southwest: LatLng(south, west), northeast: LatLng(north, east));
   }
 
   @override
@@ -112,7 +120,10 @@ class _DashboardState extends State<Dashboard> {
           IconButton(
             icon: const Icon(Icons.directions_car),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const VehicleListPage()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const VehicleListPage()));
             },
           ),
           IconButton(

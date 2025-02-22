@@ -19,6 +19,18 @@ class _DriverListPageState extends State<DriverListPage> {
     _fetchDrivers();
   }
 
+  /*
+  * void _fetchDrivers() {
+    _dbRef.onValue.listen((event) {
+      final data = event.snapshot.value as Map<dynamic, dynamic>?;
+      if (data != null) {
+        setState(() {
+          _drivers = data.entries.map((e) => {"key": e.key, ...e.value}).toList();
+        });
+      }
+    });
+  }*/
+
   void _fetchDrivers() {
     _dbRef.onValue.listen((event) {
       final data = event.snapshot.value as Map<dynamic, dynamic>?;
@@ -40,6 +52,10 @@ class _DriverListPageState extends State<DriverListPage> {
     });
   }
 
+  void _deleteDriver(String key) {
+    _dbRef.child(key).remove();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,8 +67,15 @@ class _DriverListPageState extends State<DriverListPage> {
             leading: driver['foto'].isNotEmpty
                 ? CircleAvatar(backgroundImage: NetworkImage(driver['foto']))
                 : const CircleAvatar(child: Icon(Icons.person)),
-            title: Text(driver['nome']),
-            subtitle: Text('Telefone: ${driver['telefone']}\nVeículo: ${driver['veiculo']}'),
+            title: Text(driver['nome'] ?? 'Sem nome'),
+            subtitle: Text('Telefone: ${driver['telefone'] ?? 'Sem telefone'}\nVeículo: ${driver['veiculo']}'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(icon: const Icon(Icons.edit), onPressed: () {/* TODO: Edit logic */}),
+                IconButton(icon: const Icon(Icons.delete), onPressed: () => _deleteDriver(driver['key'])),
+              ],
+            ),
           );
         },
       ),
@@ -87,7 +110,7 @@ class _AddDriverPageState extends State<AddDriverPage> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
-        _photoUrl = pickedFile.path; // verificar Firebase Storage
+        _photoUrl = pickedFile.path;
       });
     }
   }
