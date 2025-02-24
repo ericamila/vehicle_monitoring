@@ -10,8 +10,10 @@ class VehicleListPage extends StatefulWidget {
 }
 
 class _VehicleListPageState extends State<VehicleListPage> {
-  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref().child('vehicles');
-  final DatabaseReference _driverRef = FirebaseDatabase.instance.ref().child('drivers');
+  final DatabaseReference _dbRef =
+      FirebaseDatabase.instance.ref().child('vehicles');
+  final DatabaseReference _driverRef =
+      FirebaseDatabase.instance.ref().child('drivers');
   List<Map<String, dynamic>> _vehicles = [];
   Map<String, String> _drivers = {};
 
@@ -74,32 +76,38 @@ class _VehicleListPageState extends State<VehicleListPage> {
           final vehicle = _vehicles[index];
           return ListTile(
             title: Text('${vehicle['marca']} ${vehicle['modelo']}'),
-            subtitle: Column(
-              children: [
-                Text('Cor: ${vehicle['cor']} | Ano: ${vehicle['ano']}'),
-                Text('Motorista: ${_drivers[vehicle['motorista_id']] ?? 'Não vinculado'}'),
-              ],
+            subtitle: GestureDetector(
+              onTap: () {
+                /// TODO: Implementar detalhamento do veículo
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Cor: ${vehicle['cor']} | Ano: ${vehicle['ano']}'),
+                  Text(
+                      'Motorista: ${_drivers[vehicle['motorista_id']] ?? 'Não vinculado'}'),
+                  Text('Em uso: ${vehicle['em_movimento'] ? 'Sim' : 'Não'}'),
+                  vehicle['em_movimento']
+                      ? const Icon(Icons.directions_run, color: Colors.red)
+                      : const Icon(Icons.directions_car, color: Colors.green),
+                ],
+              ),
             ),
-            trailing: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                vehicle['em_movimento'] ? const Icon(Icons.directions_run, color: Colors.red) : const Icon(Icons.directions_car, color: Colors.green),
-                IconButton(
-                  icon: const Icon(Icons.map),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => VehicleMapPage(
-                          latitude: vehicle['latitude'],
-                          longitude: vehicle['longitude'],
-                          title: '${vehicle['marca']} ${vehicle['modelo']}',
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+            trailing: IconButton(
+              icon: const Icon(Icons.map),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VehicleMapPage(
+                      latitude: vehicle['latitude'],
+                      longitude: vehicle['longitude'],
+                      title: '${vehicle['marca']} ${vehicle['modelo']}',
+                    ),
+                  ),
+                );
+              },
             ),
           );
         },
@@ -109,7 +117,8 @@ class _VehicleListPageState extends State<VehicleListPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddVehiclePage(drivers: _drivers)),
+            MaterialPageRoute(
+                builder: (context) => AddVehiclePage(drivers: _drivers)),
           );
         },
       ),
@@ -122,7 +131,11 @@ class VehicleMapPage extends StatelessWidget {
   final double longitude;
   final String title;
 
-  const VehicleMapPage({super.key, required this.latitude, required this.longitude, required this.title});
+  const VehicleMapPage(
+      {super.key,
+      required this.latitude,
+      required this.longitude,
+      required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +160,7 @@ class VehicleMapPage extends StatelessWidget {
 
 class AddVehiclePage extends StatefulWidget {
   final Map<String, String> drivers;
+
   const AddVehiclePage({super.key, required this.drivers});
 
   @override
@@ -154,13 +168,13 @@ class AddVehiclePage extends StatefulWidget {
 }
 
 class _AddVehiclePageState extends State<AddVehiclePage> {
-  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref().child('vehicles');
+  final DatabaseReference _dbRef =
+      FirebaseDatabase.instance.ref().child('vehicles');
   final TextEditingController _modelController = TextEditingController();
   final TextEditingController _brandController = TextEditingController();
   final TextEditingController _colorController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
   String? _selectedDriver;
-
 
   void _saveVehicle() {
     String id = _dbRef.push().key ?? '';
@@ -171,6 +185,9 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
       'ano': _yearController.text,
       'em_movimento': false,
       'motorista_id': _selectedDriver,
+      'latitude': 2.833125,
+      'longitude': -60.6952925,
+      'velocidade': 0.0,
     });
     Navigator.pop(context);
   }
@@ -213,7 +230,8 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                   _selectedDriver = value;
                 });
               },
-              decoration: const InputDecoration(labelText: 'Selecionar Motorista'),
+              decoration:
+                  const InputDecoration(labelText: 'Selecionar Motorista'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(

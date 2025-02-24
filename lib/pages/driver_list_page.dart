@@ -10,8 +10,9 @@ class DriverListPage extends StatefulWidget {
 }
 
 class _DriverListPageState extends State<DriverListPage> {
-  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref().child('drivers');
-  List<Map<String, dynamic>> _drivers = [];
+  final DatabaseReference _dbRef =
+      FirebaseDatabase.instance.ref().child('drivers');
+  List<Map<dynamic, dynamic>> _drivers = [];
 
   @override
   void initState() {
@@ -19,34 +20,13 @@ class _DriverListPageState extends State<DriverListPage> {
     _fetchDrivers();
   }
 
-  /*
-  * void _fetchDrivers() {
-    _dbRef.onValue.listen((event) {
-      final data = event.snapshot.value as Map<dynamic, dynamic>?;
-      if (data != null) {
-        setState(() {
-          _drivers = data.entries.map((e) => {"key": e.key, ...e.value}).toList();
-        });
-      }
-    });
-  }*/
-
   void _fetchDrivers() {
     _dbRef.onValue.listen((event) {
       final data = event.snapshot.value as Map<dynamic, dynamic>?;
       if (data != null) {
-        List<Map<String, dynamic>> tempDrivers = [];
-        data.forEach((key, value) {
-          tempDrivers.add({
-            'id': key,
-            'nome': value['nome'] ?? 'Desconhecido',
-            'telefone': value['telefone'] ?? 'Não informado',
-            'foto': value['foto'] ?? '',
-            'veiculo': value['veiculo'] ?? 'Nenhum veículo',
-          });
-        });
         setState(() {
-          _drivers = tempDrivers;
+          _drivers =
+              data.entries.map((e) => {"key": e.key, ...e.value}).toList();
         });
       }
     });
@@ -54,6 +34,52 @@ class _DriverListPageState extends State<DriverListPage> {
 
   void _deleteDriver(String key) {
     _dbRef.child(key).remove();
+  }
+
+  void _editDriver(Map driver) {
+    TextEditingController nameController =
+        TextEditingController(text: driver['name']);
+    TextEditingController phoneController =
+        TextEditingController(text: driver['phone']);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Editar Motorista'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'Nome'),
+              ),
+              TextField(
+                controller: phoneController,
+                decoration: const InputDecoration(labelText: 'Telefone'),
+                keyboardType: TextInputType.phone,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                _dbRef.child(driver['key']).update({
+                  'name': nameController.text,
+                  'phone': phoneController.text,
+                });
+                Navigator.pop(context);
+              },
+              child: const Text('Salvar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -64,16 +90,25 @@ class _DriverListPageState extends State<DriverListPage> {
         itemBuilder: (context, index) {
           final driver = _drivers[index];
           return ListTile(
-            leading: driver['foto'].isNotEmpty
+            leading: driver['foto'] != null && driver['foto'] != ''
                 ? CircleAvatar(backgroundImage: NetworkImage(driver['foto']))
-                : const CircleAvatar(child: Icon(Icons.person)),
+                : CircleAvatar(
+                    foregroundColor: Colors.green[100],
+                    backgroundColor: Colors.green[800],
+                    child: const Icon(Icons.person),
+                  ),
             title: Text(driver['nome'] ?? 'Sem nome'),
-            subtitle: Text('Telefone: ${driver['telefone'] ?? 'Sem telefone'}\nVeículo: ${driver['veiculo']}'),
+            subtitle: Text(
+                'Telefone: ${driver['telefone'] ?? 'Sem telefone'}\nVeículo: ${driver['veiculo']}'),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(icon: const Icon(Icons.edit), onPressed: () {/* TODO: Edit logic */}),
-                IconButton(icon: const Icon(Icons.delete), onPressed: () => _deleteDriver(driver['key'])),
+                IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () => _editDriver(driver)),
+                IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => _deleteDriver(driver['key'])),
               ],
             ),
           );
@@ -100,7 +135,8 @@ class AddDriverPage extends StatefulWidget {
 }
 
 class _AddDriverPageState extends State<AddDriverPage> {
-  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref().child('drivers');
+  final DatabaseReference _dbRef =
+      FirebaseDatabase.instance.ref().child('drivers');
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   String? _photoUrl;
@@ -137,7 +173,8 @@ class _AddDriverPageState extends State<AddDriverPage> {
               onTap: _pickImage,
               child: CircleAvatar(
                 radius: 40,
-                backgroundImage: _photoUrl != null ? NetworkImage(_photoUrl!) : null,
+                backgroundImage:
+                    _photoUrl != null ? NetworkImage(_photoUrl!) : null,
                 child: _photoUrl == null ? const Icon(Icons.camera_alt) : null,
               ),
             ),
