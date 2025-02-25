@@ -69,11 +69,13 @@ class _LoginPageState extends State<LoginPage> {
                               email: emailController.text.trim(),
                               password: emailController.text.trim(),
                             )
-                                        .catchError((errorMsg) {
-                              Navigator.pop(context);
-                              commonMethods.displaySnackBar(
-                                  context, errorMsg.toString());
-                            }))
+                                        .catchError(
+                              (errorMsg) {
+                                Navigator.pop(context);
+                                commonMethods.displaySnackBar(
+                                    context, errorMsg.toString());
+                              },
+                            ))
                                     .user;
 
                             userName = userFirebase!.displayName!;
@@ -100,7 +102,8 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const RegisterPage()),
+                    MaterialPageRoute(
+                        builder: (context) => const RegisterPage()),
                   );
                 },
                 child: const Text('Criar Conta'),
