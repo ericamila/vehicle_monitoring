@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 final ThemeData appTheme = ThemeData(
   scaffoldBackgroundColor:  Colors.green[50],
   primarySwatch: Colors.green,
-  appBarTheme: AppBarTheme(
-    backgroundColor: Colors.green[700],
-    titleTextStyle: const TextStyle(
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Color(0xFF138275),
+    titleTextStyle: TextStyle(
         color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
   ),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
-    backgroundColor: Colors.green[600],
+    backgroundColor: const Color(0xFF138275),
     foregroundColor: Colors.white,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(30),
     ),
   ),
-  buttonTheme: ButtonThemeData(
-    buttonColor: Colors.green[600],
+  buttonTheme: const ButtonThemeData(
+    buttonColor: Color(0xFF138275),
     textTheme: ButtonTextTheme.primary,
   ),
   tabBarTheme: const TabBarTheme(
@@ -34,7 +34,7 @@ final ThemeData appTheme = ThemeData(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: WidgetStateProperty.all(Colors.green[600]),
+      backgroundColor: WidgetStateProperty.all(const Color(0xFF138275)),
       foregroundColor: WidgetStateProperty.all(Colors.white),
       textStyle: WidgetStateProperty.all(
         const TextStyle(

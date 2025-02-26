@@ -67,47 +67,53 @@ class _VehicleListPageState extends State<VehicleListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Lista de Veículos'),
-      ),
+      appBar: AppBar(title: const Text('Veículos'), toolbarHeight: 40),
       body: ListView.builder(
         itemCount: _vehicles.length,
         itemBuilder: (context, index) {
           final vehicle = _vehicles[index];
-          return ListTile(
-            title: Text('${vehicle['marca']} ${vehicle['modelo']}'),
-            subtitle: GestureDetector(
-              onTap: () {
-                /// TODO: Implementar detalhamento do veículo
-              },
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Cor: ${vehicle['cor']} | Ano: ${vehicle['ano']}'),
-                  Text(
-                      'Motorista: ${_drivers[vehicle['motorista_id']] ?? 'Não vinculado'}'),
-                  Text('Em uso: ${vehicle['em_movimento'] ? 'Sim' : 'Não'}'),
-                  vehicle['em_movimento']
-                      ? const Icon(Icons.directions_run, color: Colors.red)
-                      : const Icon(Icons.directions_car, color: Colors.green),
-                ],
-              ),
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.map),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => VehicleMapPage(
-                      latitude: vehicle['latitude'],
-                      longitude: vehicle['longitude'],
-                      title: '${vehicle['marca']} ${vehicle['modelo']}',
-                    ),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Card(
+              color: Colors.white,
+              child: ListTile(
+                title: Text('${vehicle['marca']} ${vehicle['modelo']}'),
+                subtitle: GestureDetector(
+                  onTap: () {
+                    /// TODO: Implementar detalhamento do veículo
+                  },
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Cor: ${vehicle['cor']} | Ano: ${vehicle['ano']}'),
+                      Text(
+                          'Motorista: ${_drivers[vehicle['motorista_id']] ?? 'Não vinculado'}'),
+                      Text(
+                          'Em uso: ${vehicle['em_movimento'] ? 'Sim' : 'Não'}'),
+                      vehicle['em_movimento']
+                          ? const Icon(Icons.directions_run, color: Colors.red)
+                          : const Icon(Icons.directions_car,
+                              color: Colors.green),
+                    ],
                   ),
-                );
-              },
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.map),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VehicleMapPage(
+                          latitude: vehicle['latitude'],
+                          longitude: vehicle['longitude'],
+                          title: '${vehicle['marca']} ${vehicle['modelo']}',
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
           );
         },
@@ -195,7 +201,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Adicionar Veículo')),
+      appBar: AppBar(title: const Text('Adicionar Veículo'), toolbarHeight: 40),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

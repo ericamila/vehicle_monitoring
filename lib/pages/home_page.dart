@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vehicle_monitoring/pages/route_registration_page.dart';
 import 'package:vehicle_monitoring/pages/vehicle_list_page.dart';
 
+import '../components/custom_drawer.dart';
 import 'dashboard.dart';
 import 'driver_list_page.dart';
 
@@ -16,7 +17,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      initialIndex: 3, /// APAGAR ESSA LINHA
+      initialIndex: 2, /// APAGAR ESSA LINHA
       length: 4,
       child: Scaffold(
         appBar: AppBar(
@@ -30,6 +31,7 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
+        drawer: customDrawer(context),
         body: const TabBarView(
           children: [
             Dashboard(),

@@ -12,12 +12,16 @@ class DriverListPage extends StatefulWidget {
 class _DriverListPageState extends State<DriverListPage> {
   final DatabaseReference _dbRef =
       FirebaseDatabase.instance.ref().child('drivers');
+  final DatabaseReference _dbRefVeicle =
+      FirebaseDatabase.instance.ref().child('vehicles');
   List<Map<dynamic, dynamic>> _drivers = [];
+  List<Map<dynamic, dynamic>> _movingVehicles = [];
 
   @override
   void initState() {
     super.initState();
     _fetchDrivers();
+    _fetchMovingVehicles();
   }
 
   void _fetchDrivers() {
@@ -27,6 +31,20 @@ class _DriverListPageState extends State<DriverListPage> {
         setState(() {
           _drivers =
               data.entries.map((e) => {"key": e.key, ...e.value}).toList();
+        });
+      }
+    });
+  }
+
+  void _fetchMovingVehicles() {
+    _dbRefVeicle.onValue.listen((event) {
+      final data = event.snapshot.value as Map<dynamic, dynamic>?;
+      if (data != null) {
+        setState(() {
+          _movingVehicles = data.entries
+              .where((e) => e.value['em_movimento'] == true)
+              .map((e) => {"key": e.key, ...e.value})
+              .toList();
         });
       }
     });
@@ -85,33 +103,74 @@ class _DriverListPageState extends State<DriverListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('Motoristas'), toolbarHeight: 40),
       body: ListView.builder(
         itemCount: _drivers.length,
         itemBuilder: (context, index) {
           final driver = _drivers[index];
-          return ListTile(
-            leading: driver['foto'] != null && driver['foto'] != ''
-                ? CircleAvatar(backgroundImage: NetworkImage(driver['foto']))
-                : CircleAvatar(
-                    foregroundColor: Colors.green[100],
-                    backgroundColor: Colors.green[800],
-                    child: const Icon(Icons.person),
-                  ),
-            title: Text(driver['nome'] ?? 'Sem nome'),
-            subtitle: Text(
-                'Telefone: ${driver['telefone'] ?? 'Sem telefone'}\nVeículo: ${driver['veiculo']}'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () => _editDriver(driver)),
-                IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => _deleteDriver(driver['key'])),
-              ],
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Card(
+              color: Colors.white,
+              child: ListTile(
+                leading: driver['foto'] != null && driver['foto'] != ''
+                    ? CircleAvatar(
+                        backgroundImage: NetworkImage(driver['foto']),
+                        backgroundColor: Colors.blueGrey,
+                        radius: 30,
+                      )
+                    : const CircleAvatar(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.blueGrey,
+                        child: Icon(Icons.person),
+                      ),
+                title: Text(
+                  driver['nome'] ?? 'Sem nome',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                        'Telefone: ${driver['telefone'] ?? 'Sem telefone'}\nVeículo: ${driver['veiculo'] ?? '🚘'}'),
+                    (1 == 1)
+                        ? Text(
+                            'Tag RFID: ${driver['tag_rfid']}\nBatimentos Cardíacos: ${driver['sensor_ad8232']} bpm')
+                        : const Text('nada'),
+                    Text(
+                        'Bloqueado: ${(driver['blocked'] == true) ? 'Verdadeiro' : 'Falso'}'),
+                  ],
+                ),
+                trailing: PopupMenuButton<String>(
+                  color: Colors.white70,
+                  onSelected: (value) {
+                    if (value == 'edit') {
+                      _editDriver(driver);
+                    } else if (value == 'delete') {
+                      _deleteDriver(driver['key']);
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'edit',
+                      child: ListTile(
+                        leading: Icon(Icons.edit),
+                        title: Text('Editar'),
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'delete',
+                      child: ListTile(
+                        leading: Icon(Icons.delete, color: Colors.red),
+                        title: Text('Excluir'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
+          ;
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -164,7 +223,8 @@ class _AddDriverPageState extends State<AddDriverPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Adicionar Motorista')),
+      appBar:
+          AppBar(title: const Text('Adicionar Motorista'), toolbarHeight: 40),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -172,9 +232,11 @@ class _AddDriverPageState extends State<AddDriverPage> {
             GestureDetector(
               onTap: _pickImage,
               child: CircleAvatar(
-                radius: 40,
+                radius: 50,
                 backgroundImage:
                     _photoUrl != null ? NetworkImage(_photoUrl!) : null,
+                backgroundColor: Colors.blueGrey,
+                foregroundColor: Colors.white,
                 child: _photoUrl == null ? const Icon(Icons.camera_alt) : null,
               ),
             ),
