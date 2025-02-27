@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 final ThemeData appTheme = ThemeData(
-  scaffoldBackgroundColor:  Colors.green[50],
+  scaffoldBackgroundColor: Colors.green[50],
   primarySwatch: Colors.green,
   appBarTheme: const AppBarTheme(
     backgroundColor: Color(0xFF138275),
@@ -47,6 +47,42 @@ final ThemeData appTheme = ThemeData(
           borderRadius: BorderRadius.circular(8),
         ),
       ),
+    ),
+  ),
+  textButtonTheme: TextButtonThemeData(
+    style: ButtonStyle(
+      foregroundColor: WidgetStateProperty.all(Colors.white),
+      backgroundColor: WidgetStateProperty.all(const Color(0xFF138275)),
+      shape: WidgetStateProperty.all(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
+        ),
+      ),
+    ),
+  ),
+  dialogTheme: const DialogTheme(
+    backgroundColor: Colors.white,
+    titleTextStyle: TextStyle(
+      color: Color(0xFF138275),
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+    ),
+    contentTextStyle: TextStyle(
+      color: Colors.black,
+      fontSize: 16,
+    ),
+  ),
+  inputDecorationTheme: const InputDecorationTheme(
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(5)),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Color(0xFF138275), width: 2),
+      borderRadius: BorderRadius.all(Radius.circular(5)),
+    ),
+    labelStyle: TextStyle(
+      color: Color(0xFF138275),
+      fontSize: 16,
     ),
   ),
 );

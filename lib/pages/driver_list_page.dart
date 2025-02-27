@@ -103,7 +103,7 @@ class _DriverListPageState extends State<DriverListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Motoristas'), toolbarHeight: 40),
+      appBar: AppBar(title: const Text('Motoristas'), toolbarHeight: 40, automaticallyImplyLeading: false),
       body: ListView.builder(
         itemCount: _drivers.length,
         itemBuilder: (context, index) {
@@ -229,6 +229,7 @@ class _AddDriverPageState extends State<AddDriverPage> {
       body: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Column(
+          spacing: 8,
           children: [
             GestureDetector(
               onTap: _pickImage,

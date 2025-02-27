@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vehicle_monitoring/pages/vehicle_list_page.dart';
 
 import '../globals/global_var.dart';
+import 'login_page.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -110,6 +111,7 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.my_location),
@@ -118,21 +120,13 @@ class _DashboardState extends State<Dashboard> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.directions_car),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const VehicleListPage()));
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              _logEvent("Usuário deslogou");
-              await FirebaseAuth.instance.signOut();
-            },
-          ),
+              icon: const Icon(Icons.logout),
+              onPressed: () async {
+                _logEvent("Usuário deslogou");
+                await FirebaseAuth.instance.signOut();
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()));
+              }),
         ],
       ),
       body: GoogleMap(

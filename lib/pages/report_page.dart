@@ -17,6 +17,8 @@ class _ReportPageState extends State<ReportPage> {
   List<Map<String, dynamic>> _vehicles = [];
   List<Map<String, dynamic>> _drivers = [];
   List<Map<String, dynamic>> _routes = [];
+  List<Map<String, dynamic>> _maintenance = [];
+
 
   bool _isLoading = true;
 
@@ -32,6 +34,7 @@ class _ReportPageState extends State<ReportPage> {
       final vehiclesSnapshot = await _database.child("vehicles").get();
       final driversSnapshot = await _database.child("drivers").get();
       final routesSnapshot = await _database.child("routes").get();
+      final maintenanceSnapshot = await _database.child("maintenance").get();
 
       if (vehiclesSnapshot.exists) {
         _vehicles = (vehiclesSnapshot.value as Map).entries.map((entry) {
@@ -51,6 +54,14 @@ class _ReportPageState extends State<ReportPage> {
 
       if (routesSnapshot.exists) {
         _routes = (routesSnapshot.value as Map).entries.map((entry) {
+          Map<String, dynamic> data = Map<String, dynamic>.from(entry.value);
+          data['id'] = entry.key;
+          return data;
+        }).toList();
+      }
+
+      if (maintenanceSnapshot.exists) {
+        _maintenance = (maintenanceSnapshot.value as Map).entries.map((entry) {
           Map<String, dynamic> data = Map<String, dynamic>.from(entry.value);
           data['id'] = entry.key;
           return data;
@@ -81,7 +92,7 @@ class _ReportPageState extends State<ReportPage> {
             children: [
               pw.Center(
                 child: pw.Text(
-                  'Relatório de Veículos e Rotas',
+                  'Relatório de Veículos, Rotas e Manutenção',
                   style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
                 ),
               ),
@@ -89,7 +100,7 @@ class _ReportPageState extends State<ReportPage> {
               pw.SizedBox(height: 10),
 
               // Seção de veículos
-              pw.Text("🚗 Veículos", style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+              pw.Text("Veículos", style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 5),
               ..._vehicles.map((vehicle) => pw.Text(
                 "Marca: ${vehicle['marca']} | Modelo: ${vehicle['modelo']} | Ano: ${vehicle['ano']} | Cor: ${vehicle['cor']}",
@@ -98,7 +109,7 @@ class _ReportPageState extends State<ReportPage> {
               pw.SizedBox(height: 10),
 
               // Seção de motoristas
-              pw.Text("👨‍✈️ Motoristas", style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+              pw.Text("Motoristas", style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 5),
               ..._drivers.map((driver) => pw.Text(
                 "Nome: ${driver['nome']} | Telefone: ${driver['telefone']} | RFID: ${driver['tag_rfid']} | Sensor Cardíaco: ${driver['sensor_ad8232']} bpm",
@@ -107,10 +118,19 @@ class _ReportPageState extends State<ReportPage> {
               pw.SizedBox(height: 10),
 
               // Seção de rotas
-              pw.Text("🛣️ Rotas", style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+              pw.Text("Rotas", style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 5),
               ..._routes.map((route) => pw.Text(
                 "Origem: (${route['origin_lat']}, ${route['origin_lng']}) → Destino: (${route['destination_lat']}, ${route['destination_lng']}) | Tempo Estimado: ${route['estimated_travel_time']} min | Combustível: ${route['fuel_consumption']}L",
+                style: const pw.TextStyle(fontSize: 14),
+              )),
+              pw.SizedBox(height: 10),
+
+              // Seção de manutenção
+              pw.Text("Manutenção", style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 5),
+              ..._maintenance.map((maintenance) => pw.Text(
+                "Veículo ID: ${maintenance['vehicle_id']} | Custo: R\$${maintenance['cost']} | Início: ${maintenance['start_date']} | Fim: ${maintenance['end_date']}",
                 style: const pw.TextStyle(fontSize: 14),
               )),
               pw.SizedBox(height: 20),

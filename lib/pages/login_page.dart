@@ -74,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
-      body: Center(
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(32.0),
           child: Column(
@@ -127,13 +127,13 @@ class _LoginPageState extends State<LoginPage> {
                               horizontal: 40, vertical: 15),
                         ),
                         child: const Text('Entrar',
-                            style: TextStyle(fontSize: 18)),
+                            style: TextStyle(fontSize: 16)),
                       ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               TextButton(
                 onPressed: () {
                   Navigator.push(
@@ -142,9 +142,12 @@ class _LoginPageState extends State<LoginPage> {
                         builder: (context) => const RegisterPage()),
                   );
                 },
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.green[50],
+                ),
                 child: const Text(
                   'Criar Conta',
-                  style: TextStyle(color: Colors.black87),
+                  style: TextStyle(color: Colors.black54),
                 ),
               ),
             ],

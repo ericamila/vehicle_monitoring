@@ -80,8 +80,7 @@ class _RouteRegistrationPageState extends State<RouteRegistrationPage> {
       'km_accumulated': _kmAccumulated, //não acumula ainda
     });
 
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Rota salva com sucesso!')));
+    commonMethods.displaySnackBar(context, "Rota salva com sucesso!");
     Navigator.pop(context);
   }
 
@@ -212,6 +211,7 @@ class _RouteRegistrationPageState extends State<RouteRegistrationPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mapa e Rotas'),
+        automaticallyImplyLeading: false,
         toolbarHeight: 40,
         actions: [
           IconButton(
