@@ -170,7 +170,6 @@ class _DriverListPageState extends State<DriverListPage> {
               ),
             ),
           );
-          ;
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -198,6 +197,7 @@ class _AddDriverPageState extends State<AddDriverPage> {
       FirebaseDatabase.instance.ref().child('drivers');
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _tagController = TextEditingController();
   String? _photoUrl;
 
   Future<void> _pickImage() async {
@@ -216,6 +216,7 @@ class _AddDriverPageState extends State<AddDriverPage> {
       'nome': _nameController.text,
       'telefone': _phoneController.text,
       'foto': _photoUrl ?? '',
+      'tag_rfid': _tagController.text,
     });
     Navigator.pop(context);
   }
@@ -226,7 +227,7 @@ class _AddDriverPageState extends State<AddDriverPage> {
       appBar:
           AppBar(title: const Text('Adicionar Motorista'), toolbarHeight: 40),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(32.0),
         child: Column(
           children: [
             GestureDetector(
@@ -240,6 +241,7 @@ class _AddDriverPageState extends State<AddDriverPage> {
                 child: _photoUrl == null ? const Icon(Icons.camera_alt) : null,
               ),
             ),
+            const SizedBox(height: 20),
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(labelText: 'Nome'),
@@ -249,7 +251,11 @@ class _AddDriverPageState extends State<AddDriverPage> {
               decoration: const InputDecoration(labelText: 'Telefone'),
               keyboardType: TextInputType.phone,
             ),
-            const SizedBox(height: 20),
+            TextField(
+              controller: _tagController,
+              decoration: const InputDecoration(labelText: 'Tag RFID'),
+            ),
+            const SizedBox(height: 30),
             ElevatedButton(
               onPressed: _saveDriver,
               child: const Text('Salvar'),

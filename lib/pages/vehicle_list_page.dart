@@ -2,6 +2,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../methods/common_methods.dart';
+
 class VehicleListPage extends StatefulWidget {
   const VehicleListPage({super.key});
 
@@ -176,26 +178,59 @@ class AddVehiclePage extends StatefulWidget {
 class _AddVehiclePageState extends State<AddVehiclePage> {
   final DatabaseReference _dbRef =
       FirebaseDatabase.instance.ref().child('vehicles');
+  final TextEditingController _plateController = TextEditingController();
   final TextEditingController _modelController = TextEditingController();
   final TextEditingController _brandController = TextEditingController();
   final TextEditingController _colorController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
+  CommonMethods commonMethods = CommonMethods();
   String? _selectedDriver;
 
+  bool validateForm() {
+    if (_plateController.text.isEmpty) {
+      commonMethods.displaySnackBar(context, 'Placa é obrigatória');
+      return false;
+    }
+    if (_modelController.text.isEmpty) {
+      commonMethods.displaySnackBar(context, 'Modelo é obrigatório');
+      return false;
+    }
+    if (_brandController.text.isEmpty) {
+      commonMethods.displaySnackBar(context, 'Marca é obrigatória');
+      return false;
+    }
+    if (_colorController.text.isEmpty) {
+      commonMethods.displaySnackBar(context, 'Cor é obrigatória');
+      return false;
+    }
+    if (_yearController.text.isEmpty) {
+      commonMethods.displaySnackBar(context, 'Ano é obrigatório');
+      return false;
+    }
+    if (_selectedDriver == null) {
+      commonMethods.displaySnackBar(context, 'Motorista é obrigatório');
+      return false;
+    }
+    return true;
+  }
+
   void _saveVehicle() {
-    String id = _dbRef.push().key ?? '';
-    _dbRef.child(id).set({
-      'modelo': _modelController.text,
-      'marca': _brandController.text,
-      'cor': _colorController.text,
-      'ano': _yearController.text,
-      'em_movimento': false,
-      'motorista_id': _selectedDriver,
-      'latitude': 2.833125,
-      'longitude': -60.6952925,
-      'velocidade': 0.0,
-    });
-    Navigator.pop(context);
+    if (validateForm()) {
+      String id = _plateController.text.toUpperCase();
+      _dbRef.child(id).set({
+        'placa': _plateController.text.toUpperCase(),
+        'modelo': _modelController.text,
+        'marca': _brandController.text,
+        'cor': _colorController.text,
+        'ano': _yearController.text,
+        'em_movimento': false,
+        'motorista_id': _selectedDriver,
+        'latitude': 2.833125,
+        'longitude': -60.6952925,
+        'velocidade': 0.0,
+      });
+      Navigator.pop(context);
+    }
   }
 
   @override
@@ -205,7 +240,13 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          spacing: 8,
           children: [
+            TextField(
+              controller: _plateController,
+              decoration: const InputDecoration(labelText: 'Placa'),
+              textCapitalization: TextCapitalization.characters,
+            ),
             TextField(
               controller: _modelController,
               decoration: const InputDecoration(labelText: 'Modelo'),

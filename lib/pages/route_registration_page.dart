@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -35,6 +33,7 @@ class _RouteRegistrationPageState extends State<RouteRegistrationPage> {
   List<String> _vehicles = [];
   String? _selectedVehicle;
   String? _distance;
+  double? _kmAccumulated;
 
   @override
   void initState() {
@@ -78,6 +77,7 @@ class _RouteRegistrationPageState extends State<RouteRegistrationPage> {
       'destination_lng': _destinationLatLng!.longitude,
       'estimedTime': _estimedTime,
       'distance': _distance,
+      'km_accumulated': _kmAccumulated, //não acumula ainda
     });
 
     ScaffoldMessenger.of(context)
@@ -228,6 +228,7 @@ class _RouteRegistrationPageState extends State<RouteRegistrationPage> {
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Column(
           children: [
+            const SizedBox(height: 8),
             DropdownButtonFormField(
               value: _selectedVehicle,
               items: _vehicles

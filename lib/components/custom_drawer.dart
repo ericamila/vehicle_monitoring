@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../pages/about.dart';
+import '../pages/login_page.dart';
 import '../pages/report_page.dart';
 
 Drawer customDrawer(BuildContext context) => Drawer(
@@ -23,14 +25,22 @@ Drawer customDrawer(BuildContext context) => Drawer(
             },
           ),
           ListTile(
-            leading: const Icon(Icons.person),
+            leading: const Icon(Icons.info_outline),
             title: const Text('Sobre'),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(context, MaterialPageRoute(builder: (context) => const About()));
             },
           ),
-
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title: const Text('Logout'),
+            onTap: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+            },
+          ),
         ],
       ),
     );
