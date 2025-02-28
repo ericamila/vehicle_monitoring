@@ -44,3 +44,4 @@ app.*.map.json
 
 /lib/globals/global_var.dart
 /arduino/ambiente.ino
+arduino/sketch_feb20a_copy_20250227225038/ambiente.ino
