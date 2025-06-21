@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,13 +17,22 @@ class _DriverListPageState extends State<DriverListPage> {
   final DatabaseReference _dbRefVeicle =
       FirebaseDatabase.instance.ref().child('vehicles');
   List<Map<dynamic, dynamic>> _drivers = [];
-  List<Map<dynamic, dynamic>> _movingVehicles = [];
+  //List<Map<dynamic, dynamic>> _movingVehicles = [];
+  //int sensorValue = 0;
+  List<int> _sensorValues = [];
+  StreamSubscription? _sensorSubscription;
 
   @override
   void initState() {
     super.initState();
     _fetchDrivers();
-    _fetchMovingVehicles();
+    //_fetchMovingVehicles();
+  }
+
+  @override
+  void dispose() {
+    _sensorSubscription?.cancel();
+    super.dispose();
   }
 
   void _fetchDrivers() {
@@ -31,11 +42,40 @@ class _DriverListPageState extends State<DriverListPage> {
         setState(() {
           _drivers =
               data.entries.map((e) => {"key": e.key, ...e.value}).toList();
+          _extractSensorValue();
         });
       }
     });
   }
 
+/*  void _extractSensorValue() {
+    for (var driver in _drivers) {
+      if (driver['key'] == '-OJf_KbUSZCRGYoeZEMO') {
+        final driverData = driver['8b89ae2'];
+        if (driverData != null && driverData['sensor_ad8232'] != null) {
+          sensorValue = driverData['sensor_ad8232'] as int;
+          return; // Encontrou o valor, pode sair do loop
+        }
+      }
+    }
+  }*/
+
+  void _extractSensorValue() {
+    for (var driver in _drivers) {
+      if (driver['key'] == '-OJf_KbUSZCRGYoeZEMO') {
+        final driverData = driver['8b89ae2'];
+        if (driverData != null && driverData['sensor_ad8232'] != null) {
+          int newValue = driverData['sensor_ad8232'] as int;
+          if (_sensorValues.length >= 3) {
+            _sensorValues.removeAt(0);
+          }
+          _sensorValues.add(newValue);
+          return;
+        }
+      }
+    }
+  }
+/*
   void _fetchMovingVehicles() {
     _dbRefVeicle.onValue.listen((event) {
       final data = event.snapshot.value as Map<dynamic, dynamic>?;
@@ -48,6 +88,42 @@ class _DriverListPageState extends State<DriverListPage> {
         });
       }
     });
+  }*/
+
+  void _showSensorDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            _sensorSubscription = _dbRef.onValue.listen((event) {
+              final data = event.snapshot.value as Map<dynamic, dynamic>?;
+              if (data != null) {
+                _extractSensorValue();
+                setState(() {});
+              }
+            });
+
+            return AlertDialog(
+              title: const Text('Valor Atual do Sensor'),
+              content: Text(
+                _sensorValues.isNotEmpty ? '${_sensorValues.last} bpm' : 'N/A',
+                style: const TextStyle(fontSize: 24),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    _sensorSubscription?.cancel();
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Fechar'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   void _deleteDriver(String key) {
@@ -128,18 +204,16 @@ class _DriverListPageState extends State<DriverListPage> {
                   driver['nome'] ?? 'Sem nome',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                        'Telefone: ${driver['telefone'] ?? 'Sem telefone'}\nVeículo: ${driver['veiculo'] ?? '🚘'}'),
-                    (1 == 1)
-                        ? Text(
-                            'Tag RFID: ${driver['tag_rfid']}\nBatimentos Cardíacos: ${driver['sensor_ad8232']} bpm')
-                        : const Text('nada'),
-                    Text(
-                        'Bloqueado: ${(driver['blocked'] == true) ? 'Verdadeiro' : 'Falso'}'),
-                  ],
+                subtitle: GestureDetector(
+                  onTap: _showSensorDialog,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Telefone: ${driver['telefone'] ?? 'Sem telefone'}\nVeículo: ${driver['veiculo'] ?? '🚘'}'),
+                      Text('Tag RFID: ${driver['tag_rfid']}\nBatimentos Cardíacos: ${_sensorValues.isNotEmpty ? _sensorValues.last : 'N/A'} bpm'),
+                      Text('Bloqueado: ${(driver['blocked'] == true) ? 'Verdadeiro' : 'Falso'}'),
+                    ],
+                  ),
                 ),
                 trailing: PopupMenuButton<String>(
                   color: Colors.white70,

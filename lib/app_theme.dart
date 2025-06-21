@@ -19,7 +19,7 @@ final ThemeData appTheme = ThemeData(
     buttonColor: Color(0xFF138275),
     textTheme: ButtonTextTheme.primary,
   ),
-  tabBarTheme: const TabBarTheme(
+  tabBarTheme: const TabBarThemeData(
     labelColor: Colors.white,
     unselectedLabelColor: Colors.white60,
     indicatorSize: TabBarIndicatorSize.label,
@@ -60,7 +60,7 @@ final ThemeData appTheme = ThemeData(
       ),
     ),
   ),
-  dialogTheme: const DialogTheme(
+  dialogTheme: const DialogThemeData(
     backgroundColor: Colors.white,
     titleTextStyle: TextStyle(
       color: Color(0xFF138275),

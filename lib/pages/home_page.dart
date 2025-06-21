@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      initialIndex: 2, /// APAGAR ESSA LINHA
+      //initialIndex: 2, /// APAGAR ESSA LINHA
       length: 4,
       child: Scaffold(
         appBar: AppBar(
